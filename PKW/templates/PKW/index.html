@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<head>
+    {% load staticfiles %}
+    {% load division %}
+    <title>Wybory 2005</title>
+    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'PKW/style.css' %}" />
+    <script src="{% static 'ammap/ammap.js' %}" type="text/javascript"></script>
+    <link rel="stylesheet" href="{% static 'ammap/ammap.css' %}" type="text/css" media="all" />
+    <script src="{% static 'ammap/maps/js/polandLow.js' %}" type="text/javascript"></script>
+</head>
+
+<header>
+    <img src="{% static "PKW/images/PKWheadline1.png" %}"><br>
+    <img src="{% static "PKW/images/PKWheadline2.jpg" %}"><br>
+    <ul id="menu">
+        <li><a href="#">Akty Prawne</a></li>
+        <li><a href="#">Dokumenty</a></li>
+        <li><a href="#">Organy wyborcze</a></li>
+        <li><a href="#">Kandydaci</a></li>
+        <li><a href="#">Frekwencja</a></li>
+        <li><a href="#">Wyniki</a></li>
+        <li><a href="#">Pierwsze głosowanie</a></li>
+        <li><a href="#">SEJM</a></li>
+        <li><a href="#">SENAT</a></li>
+        <li><a href="#">Wykonawca</a></li>
+    </ul>
+</header>
+
+<div id="headline">
+    <p>Wyniki głosowania</p>
+</div>
+
+<div id="vote_summary">
+    <div id="vote_map">
+        <div id="mapdiv" style="width: 330px; height: 330px;">
+        </div>
+
+        <table id="map_color_legend">
+            <tr>
+                {% for i in 10|get_range %}
+                    <td> {{ i|mult:2.27|add_float:50|get_dec2 }} %</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for i in 10|get_range %}
+                    <td class="dis_color_{{ i }}_first"></td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for i in 10|get_range %}
+                    <td class="dis_color_{{ i }}_second"></td>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+
+    <div id="additional_info">
+        <p><b>Zobacz także:</b></p>
+        <ul>
+            <li><a href="#">Frekwencja</a></li>
+            <li><a href="#">Wyniki głosowania za granicą</a></li>
+            <li><a href="#">Porównywanie wyników głosowania na kandydatów w zależności od <br>
+            siedziby komisji obwodowej.</a></li>
+        </ul>
+        <p><b>Szczegółowe wyniki głosowania na kandydatów:</b></p>
+        <ul>
+            <li>KACZYŃSKI Lech Aleksander</li>
+            <li>TUSK Donald Franciszek</li>
+        </ul>
+    </div>
+</div>
+
+<div id="editing_form">
+    <select class="select_form" id="select_by_voiv">
+        {% for voivodeship in voivodeship_list %}
+            <option value="{{ voivodeship.Name }}">{{ voivodeship.Name }}</option>
+        {% endfor %}
+    </select>
+
+    <button class="view_button" id="voiv_button">Wyświetl</button>
+
+    <br>
+
+    <select class="select_form" id="select_by_inh">
+        <option value="5">do 5000</option>
+        <option value="10">od 5001 do 10 000</option>
+        <option value="20">od 10 001 do 20 000</option>
+        <option value="50">od 20 001 do 50 000</option>
+        <option value="100">od 50 001 do 100 000</option>
+        <option value="200">od 100 001 do 200 000</option>
+        <option value="500">od 200 001 do 500 000</option>
+        <option value="501">powyżej 500 000</option>
+    </select>
+
+    <button class="view_button" id="inh_button">Wyświetl</button>
+
+    <br>
+
+    <select class="select_form" id="select_by_type">
+        <option>Wieś</option>
+        <option>Miasto</option>
+        <option>Zagranica</option>
+        <option>Statki</option>
+    </select>
+
+    <button class="view_button" id="type_button">Wyświetl</button>
+</div>
+
+<table id='results_table'>
+    <tr>
+        <th rowspan = "3">Nr</th>
+        <th rowspan = "3">Nazwa</th>
+        <th rowspan = "3">Liczba głosów ważnych</th>
+        <th colspan = "2" id="first_cand">{{ candidates.first.Name }}</th>
+        <th rowspan = "3">Reprezentacja graficzna % głosów</th>
+        <th colspan = "2" id="second_cand">{{ candidates.last.Name }}</th>
+    </tr>
+    <tr>
+        <th colspan = "2">głosy oddane na kandydata</th>
+        <th colspan = "2">głosy oddane na kandydata</th>
+    </tr>
+    <tr>
+        <th>liczba</th>
+        <th>%</th>
+        <th>%</th>
+        <th>liczba</th>
+    </tr>
+    {% for voivodeship in voivodeship_list %}
+        <tr class="voivodeship_row">
+            <td>{{ voivodeship.Nr }}</td>
+            <td class="voiv_name">{{ voivodeship.Name }}</td>
+            <td>{{ voivodeship.relevant_votes }}</td>
+            <td>{{ voivodeship.votingresult_set.first.votes }}</td>
+            <td class="first_percent">{{ voivodeship.votingresult_set.first.votes|div:voivodeship.relevant_votes|mult:100|get_dec2 }}</td>
+            <td class="bar_cell"></td>
+            <td class="sec_percent">{{ voivodeship.votingresult_set.last.votes|div:voivodeship.relevant_votes|mult:100|get_dec2 }}</td>
+            <td>{{ voivodeship.votingresult_set.last.votes }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+{% csrf_token %}
+<!-- Modal window for viewing districts -->
+<div class="modal">
+    <div class="modal_content">
+        <span class="close">x</span>
+        <table id="modal_table">
+        </table>
+    </div>
+</div>
+
+<div>
+    {% if request.user.is_authenticated %}
+        Hello, {{ request.user.username }}.
+        <script src="{% static "PKW/ajax.js" %}" type="text/javascript"></script>
+    {% else %}
+        <form method="POST" action="login/">
+            {% csrf_token %}
+            Username: <input type="text" name="username"> Password: <input type="password" name="password"> <input type="submit">
+        </form>
+    {% endif %}
+</div>
+
+
+<script src="{% static "PKW/scripts.js" %}" type="text/javascript"></script>
+
+
+</body></html>
