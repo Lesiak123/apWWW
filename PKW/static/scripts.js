@@ -42,13 +42,13 @@ function displayResults(jsonDistricts, jsonVoivodeships) {
 
 function refresh() {
     var districtData, voivodeshipData;
-
+	console.log("yo");
     $.ajax({
         type:'GET',
         url:'rest/districts',
         success: function(response) {
             districtData = response;
-        }
+        },
 		error: function(response) {
 			alert(response);
 		}
@@ -59,7 +59,7 @@ function refresh() {
         url:'rest/voivodeships',
         success: function(response) {
             voivodeshipData = response;
-        }
+        },
 		error: function(response) {
 			alert(response);
 		}
@@ -105,8 +105,8 @@ window.addEventListener('load', function(){
             "%)";
         curRow.children(".bar_cell").css({'background-image': background});
 
-		refresh();
     });
+	refresh();
 })
 
 $('.close').click(function(){

@@ -1,0 +1,7 @@
+*.pyc
+*.pyo
+PKW/__pycache__/
+PKW/migrations/__pycache__/
+PKW/templatetags/__pycache__/
+Zadanie1WWW/__pycache__/
+db.sqlite3
