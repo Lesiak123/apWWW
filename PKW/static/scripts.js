@@ -49,6 +49,9 @@ function refresh() {
         success: function(response) {
             districtData = response;
         }
+		error: function(response) {
+			alert(response);
+		}
     });
 
     $.ajax({
@@ -57,6 +60,9 @@ function refresh() {
         success: function(response) {
             voivodeshipData = response;
         }
+		error: function(response) {
+			alert(response);
+		}
     });
 
     displayResults(districtData, voivodeshipData);
