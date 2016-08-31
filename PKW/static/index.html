@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <head>
-    {% load staticfiles %}
-    {% load division %}
     <title>Wybory 2005</title>
-    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="jquery-3.1.0.min.js type=" text=javascript"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" type="text/css" href="{% static 'PKW/style.css' %}" />
-    <script src="{% static 'ammap/ammap.js' %}" type="text/javascript"></script>
-    <link rel="stylesheet" href="{% static 'ammap/ammap.css' %}" type="text/css" media="all" />
-    <script src="{% static 'ammap/maps/js/polandLow.js' %}" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href='style.css' />
+    <script src="ammap/ammap.js" type="text/javascript"></script>
+    <link rel="stylesheet" href='ammap/ammap.css' type="text/css" media="all" />
+    <script src='ammap/maps/js/polandLow.js' type="text/javascript"></script>
 </head>
 
 <header>
-    <img src="{% static "PKW/images/PKWheadline1.png" %}"><br>
-    <img src="{% static "PKW/images/PKWheadline2.jpg" %}"><br>
+    <img src="images/PKWheadline1.png"><br>
+    <img src="images/PKWheadline2.jpg"><br>
     <ul id="menu">
         <li><a href="#">Akty Prawne</a></li>
         <li><a href="#">Dokumenty</a></li>
@@ -39,19 +37,40 @@
 
         <table id="map_color_legend">
             <tr>
-                {% for i in 10|get_range %}
-                    <td> {{ i|mult:2.27|add_float:50|get_dec2 }} %</td>
-                {% endfor %}
+                <td>50.00%</td>
+                <td>52.27%</td>
+                <td>54.54%</td>
+                <td>56.81%</td>
+                <td>59.08%</td>
+                <td>61.35%</td>
+                <td>63.62%</td>
+                <td>65.89%</td>
+                <td>68.16%</td>
+                <td>70.43%</td>
             </tr>
             <tr>
-                {% for i in 10|get_range %}
-                    <td class="dis_color_{{ i }}_first"></td>
-                {% endfor %}
+                <td class="dis_color_0_first"></td>
+                <td class="dis_color_1_first"></td>
+                <td class="dis_color_2_first"></td>
+                <td class="dis_color_3_first"></td>
+                <td class="dis_color_4_first"></td>
+                <td class="dis_color_5_first"></td>
+                <td class="dis_color_6_first"></td>
+                <td class="dis_color_7_first"></td>
+                <td class="dis_color_8_first"></td>
+                <td class="dis_color_9_first"></td>
             </tr>
             <tr>
-                {% for i in 10|get_range %}
-                    <td class="dis_color_{{ i }}_second"></td>
-                {% endfor %}
+                <td class="dis_color_0_second"></td>
+                <td class="dis_color_1_second"></td>
+                <td class="dis_color_2_second"></td>
+                <td class="dis_color_3_second"></td>
+                <td class="dis_color_4_second"></td>
+                <td class="dis_color_5_second"></td>
+                <td class="dis_color_6_second"></td>
+                <td class="dis_color_7_second"></td>
+                <td class="dis_color_8_second"></td>
+                <td class="dis_color_9_second"></td>
             </tr>
         </table>
     </div>
@@ -127,21 +146,9 @@
         <th>%</th>
         <th>liczba</th>
     </tr>
-    {% for voivodeship in voivodeship_list %}
-        <tr class="voivodeship_row">
-            <td>{{ voivodeship.Nr }}</td>
-            <td class="voiv_name">{{ voivodeship.Name }}</td>
-            <td>{{ voivodeship.relevant_votes }}</td>
-            <td>{{ voivodeship.votingresult_set.first.votes }}</td>
-            <td class="first_percent">{{ voivodeship.votingresult_set.first.votes|div:voivodeship.relevant_votes|mult:100|get_dec2 }}</td>
-            <td class="bar_cell"></td>
-            <td class="sec_percent">{{ voivodeship.votingresult_set.last.votes|div:voivodeship.relevant_votes|mult:100|get_dec2 }}</td>
-            <td>{{ voivodeship.votingresult_set.last.votes }}</td>
-        </tr>
-    {% endfor %}
+
 </table>
 
-{% csrf_token %}
 <!-- Modal window for viewing districts -->
 <div class="modal">
     <div class="modal_content">
@@ -152,19 +159,13 @@
 </div>
 
 <div>
-    {% if request.user.is_authenticated %}
-        Hello, {{ request.user.username }}.
-        <script src="{% static "PKW/ajax.js" %}" type="text/javascript"></script>
-    {% else %}
+        Hello, .
+        <script src=ajax.js" type="text/javascript"></script>
         <form method="POST" action="login/">
-            {% csrf_token %}
             Username: <input type="text" name="username"> Password: <input type="password" name="password"> <input type="submit">
         </form>
-    {% endif %}
 </div>
 
-
-<script src="{% static "PKW/scripts.js" %}" type="text/javascript"></script>
-
+<script src="scripts.js" type="text/javascript"></script>
 
 </body></html>
