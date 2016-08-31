@@ -1,3 +1,5 @@
+*.pyc
+*.pyo
 PKW/__pycache__/
 PKW/migrations/__pycache__/
 PKW/templatetags/__pycache__/
