@@ -2,6 +2,31 @@ var map_colors = ["rgb(204,227,255)", "rgb(180,213,253)", "rgb(153,199,255)", "r
     "rgb(2,115,253)", "rgb(2,96,212)", "rgb(1,74,163)", "rgb(0,53,117)", "rgb(255,219,112)", "rgb(255,205,112)", "rgb(255,193,94)",
     "rgb(255,181,84)", "rgb(255,169,81)", "rgb(255,157,57)", "rgb(254,144,32)", "rgb(255,134,9)", "rgb(231,121,0)", "rgb(206,104,0)"];
 
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+            // Only send the token to relative URLs i.e. locally.
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        }
+    }
+});
+
 function displayResults(jsonDistricts, jsonVoivodeships) {
     var districts = JSON.parse(jsonDistricts);
     var voivodeships = JSON.parse(jsonVoivodeships);
@@ -42,56 +67,38 @@ function displayResults(jsonDistricts, jsonVoivodeships) {
 
 function refresh() {
     var districtData, voivodeshipData;
-	console.log("yo");
+	var success = true;
+
     $.ajax({
         type:'GET',
-        url:'rest/districts',
+        url:'http://127.0.0.1:8000/rest/districts/',
         success: function(response) {
             districtData = response;
         },
-		error: function(response) {
-			alert(response);
+		error: function(xhr, status, error) {
+ 			var err = eval("(" + xhr.responseText + ")");
+  			alert(err.Message);
+			success = false;
 		}
     });
 
     $.ajax({
         type:'GET',
-        url:'rest/voivodeships',
+        url:'http://127.0.0.1:8000/rest/voivodeships/',
         success: function(response) {
             voivodeshipData = response;
         },
-		error: function(response) {
-			alert(response);
+		error: function(xhr, status, error) {
+  			var err = eval("(" + xhr.responseText + ")");
+  			alert(err.Message);
+			success = false;
 		}
     });
 
-    displayResults(districtData, voivodeshipData);
+    if (success) {
+		displayResults(districtData, voivodeshipData);
+	}
 }
-
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-            // Only send the token to relative URLs i.e. locally.
-            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        }
-    }
-});
 
 window.addEventListener('load', function(){
     $(".voivodeship_row").each(function(index){

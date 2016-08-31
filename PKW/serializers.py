@@ -5,7 +5,7 @@ from .models import District, Voivodeship, Candidate
 class DistrictSerializer(ModelSerializer):
     class Meta:
         model = District
-        fields = ('last_edit_date', 'voivodeship', 'Name', 'Type', 'inhabitants', 'eligible_voters', 'issued_ballots', 'votes', 'relevant_votes', 'votes_for_first')
+        fields = ('last_edit_date', 'voivodeship', 'Name', 'Type', 'Inhabitants', 'eligible_voters', 'issued_ballots', 'votes', 'relevant_votes', 'votes_for_first')
 
 
 class VoivodeshipSerializer(ModelSerializer):
@@ -17,4 +17,4 @@ class VoivodeshipSerializer(ModelSerializer):
 class CandidateSerializer(ModelSerializer):
     class Meta:
         model = Candidate
-        fields = ('Name')
+        fields = ('Name',)
