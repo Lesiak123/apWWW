@@ -28,8 +28,8 @@ $.ajaxSetup({
 });
 
 function displayResults(jsonDistricts, jsonVoivodeships) {
-    var districts = jsonDistricts;
-    var voivodeships = jsonVoivodeships;
+    var districts = JSON.parse(jsonDistricts);
+    var voivodeships = JSON.parse(jsonVoivodeships);
 
     $("table tr.voivodeship_row").remove();
 
@@ -40,15 +40,17 @@ function displayResults(jsonDistricts, jsonVoivodeships) {
         var votes_for_first = 0;
         var votes_for_second = 0;
         var curr_row;
-        var per1 = (votes_for_first/(votes_for_first + votes_for_second))*100;
-        var per2 = (votes_for_second/(votes_for_first + votes_for_second))*100;
 
         row.className = "voivodeship_row";
 
         for (var d in districts) {
             votes_for_first += districts[d]["votes_for_first"];
             votes_for_second += districts[d]["relevant_votes"] - districts[d]["votes_for_first"];
+			console.log(votes_for_first);
         }
+
+        var per1 = (votes_for_first/(votes_for_first + votes_for_second))*100;
+        var per2 = (votes_for_second/(votes_for_first + votes_for_second))*100;
 
         row.insertCell().appendChild(document.createTextNode(voivodeships[v]["Nr"]));
         curr_row = row.insertCell().appendChild(document.createTextNode(voivodeships[v]["Name"]));
@@ -75,7 +77,7 @@ function refresh() {
         success: function(response) {
             districtData = response;
         },
-		error: function(xhr, status, error) {
+		error: function() {
  			var err = eval("(" + xhr.responseText + ")");
   			alert(err.Message);
 			success = false;
