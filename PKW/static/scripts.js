@@ -98,6 +98,8 @@ window.addEventListener('load', function(){
             first +
             "%)";
         curRow.children(".bar_cell").css({'background-image': background});
+
+		refresh();
     });
 })
 
