@@ -28,12 +28,12 @@ $.ajaxSetup({
 });
 
 function displayResults(jsonDistricts, jsonVoivodeships) {
-    var districts = JSON.parse(jsonDistricts);
-    var voivodeships = JSON.parse(jsonVoivodeships);
+    var districts = jsonDistricts;
+    var voivodeships = jsonVoivodeships;
 
     $("table tr.voivodeship_row").remove();
 
-    var table = document.getElementsById("results_table");
+    var table = document.getElementById("results_table");
 
     for (var v in voivodeships) {
         var row = table.insertRow(table.rows.length);
@@ -94,6 +94,7 @@ function refresh() {
 			success = false;
 		}
     });
+
 
     if (success) {
 		displayResults(districtData, voivodeshipData);
