@@ -48,29 +48,30 @@ def listCandidates(request):
 
 @require_GET
 def editing_byinh(request):
-    if request.method == 'GET':
-        lb = request.GET['lower']
-        ub = request.GET['upper']
-        data = serializers.serialize('json',District.objects.filter(Inhabitants__range=[lb,ub]))
-        return HttpResponse(data)
+	lb = request.GET['lower']
+	ub = request.GET['upper']
+	data = serializers.serialize('json',District.objects.filter(Inhabitants__range=[lb,ub]))
+	response = HttpResponse(data);
+	response["Access-Control-Allow-Origin"] = "*"
+	return HttpResponse(data);
 
 
 @require_GET
 def editing_byvoiv(request):
-    if request.method == 'GET':
-        vname = request.GET['name']
-        data = serializers.serialize('json', District.objects.filter(voivodeship__Name=vname))
-		r = HttpResponse(data);
-		#response["Access-Control-Allow-Origin"] = "*"
-        return HttpResponse(data);
+	vname = request.GET['name']
+	data = serializers.serialize('json', District.objects.filter(voivodeship__Name=vname))
+	response = HttpResponse(data);
+	response["Access-Control-Allow-Origin"] = "*"
+	return HttpResponse(data);
 
 
 @require_GET
 def editing_bytype(request):
-    if request.method == 'GET':
-        tName = request.GET['name']
-        data = serializers.serialize('json', District.objects.filter(Type=tName))
-        return HttpResponse(data)
+	tName = request.GET['name']
+	data = serializers.serialize('json', District.objects.filter(Type=tName))
+	response = HttpResponse(data);
+	response["Access-Control-Allow-Origin"] = "*"
+	return HttpResponse(data);
 
 
 def editing_save(request):

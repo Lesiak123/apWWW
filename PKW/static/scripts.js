@@ -190,8 +190,8 @@ function requestDistricts() {
 
 function requestVoivodeships() {
 	return $.ajax({
-		dataType:'json',
         type:'GET',
+		dataType:'json',
         url:'http://127.0.0.1:8000/rest/voivodeships/',
        	error:function() {
 			alert("Error getting voivodeships");
