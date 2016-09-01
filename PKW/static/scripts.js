@@ -30,8 +30,8 @@ $.ajaxSetup({
 });
 
 function displayResults(jsonDistricts, jsonVoivodeships) {
-    var districts = JSON.parse(jsonDistricts);
-    var voivodeships = JSON.parse(jsonVoivodeships);
+    var districts = jsonDistricts;
+    var voivodeships = jsonVoivodeships;
 
     $("table tr.voivodeship_row").remove();
 
@@ -70,10 +70,6 @@ function displayResults(jsonDistricts, jsonVoivodeships) {
     }
 }
 
-$.when(requestDistricts(), requestVoivodeships()).done(function(a1, a2){
-	displayResults(districtData, voivodeshipData);
-});
-
 function requestDistricts() {
 	return $.ajax({
         type:'GET',
@@ -83,6 +79,7 @@ function requestDistricts() {
 		},
 		success:function(data) {
 			districtData = data;
+			console.log(data);
 			localStorage.setItem("districts", data);
 		}
     });
@@ -97,14 +94,10 @@ function requestVoivodeships() {
 		},
 		success:function(data) {
 			voivodeshipData = data;
+			console.log(data);
 			localStorage.setItem("voivodeships", data);
 		}
     });
-}
-
-function refresh() {
-	requestDistricts();
-	requestVoivodeships();
 }
 
 window.addEventListener('load', function(){
@@ -120,7 +113,9 @@ window.addEventListener('load', function(){
         curRow.children(".bar_cell").css({'background-image': background});
 
     });
-	refresh();
+	$.when(requestDistricts(), requestVoivodeships()).done(function(a1, a2){
+		displayResults(districtData, voivodeshipData);
+	});
 })
 
 $('.close').click(function(){
