@@ -48,11 +48,12 @@ function displayResults(jsonDistricts, jsonVoivodeships) {
         for (var d in districts) {
             votes_for_first += districts[d]["votes_for_first"];
             votes_for_second += districts[d]["relevant_votes"] - districts[d]["votes_for_first"];
-			console.log(votes_for_first);
         }
 
         var per1 = (votes_for_first/(votes_for_first + votes_for_second))*100;
         var per2 = (votes_for_second/(votes_for_first + votes_for_second))*100;
+
+		console.log(votes_for_first);
 
         row.insertCell().appendChild(document.createTextNode(voivodeships[v]["Nr"]));
         curr_row = row.insertCell().appendChild(document.createTextNode(voivodeships[v]["Name"]));
@@ -69,6 +70,10 @@ function displayResults(jsonDistricts, jsonVoivodeships) {
     }
 }
 
+$.when(refresh()).done(function(){
+	displayResults(districtData, voivodeshipData);
+});
+
 function refresh() {
 
 	var req = new XMLHttpRequest();
@@ -78,7 +83,6 @@ function refresh() {
 	});
 	req.addEventListener("load", function() {
 		districtData = this.responseText;
-
 		localStorage.setItem("districts", this.responseText);
 	});
 	req.send();
@@ -90,15 +94,9 @@ function refresh() {
 	});
 	req.addEventListener("load", function() {
 		voivodeshipData = this.responseText;
-
 		localStorage.setItem("voivodeships", this.responseText);
 	});
 	req.send();
-
-
-    if (data_retrieved) {
-		displayResults(districtData, voivodeshipData);
-	}
 }
 
 window.addEventListener('load', function(){
