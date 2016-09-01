@@ -1,6 +1,8 @@
 var map_colors = ["rgb(204,227,255)", "rgb(180,213,253)", "rgb(153,199,255)", "rgb(125,183,254)", "rgb(90,164,254)", "rgb(53,144,255)",
     "rgb(2,115,253)", "rgb(2,96,212)", "rgb(1,74,163)", "rgb(0,53,117)", "rgb(255,219,112)", "rgb(255,205,112)", "rgb(255,193,94)",
     "rgb(255,181,84)", "rgb(255,169,81)", "rgb(255,157,57)", "rgb(254,144,32)", "rgb(255,134,9)", "rgb(231,121,0)", "rgb(206,104,0)"];
+var districtData, voivodeshipData;
+var data_retrieved = true;
 
 function getCookie(name) {
     var cookieValue = null;
@@ -68,37 +70,33 @@ function displayResults(jsonDistricts, jsonVoivodeships) {
 }
 
 function refresh() {
-    var districtData, voivodeshipData;
-	var success = true;
 
-    $.ajax({
-        type:'GET',
-        url:'http://127.0.0.1:8000/rest/districts/',
-        success: function(response) {
-            districtData = response;
-        },
-		error: function() {
- 			var err = eval("(" + xhr.responseText + ")");
-  			alert(err.Message);
-			success = false;
-		}
-    });
+	var req = new XMLHttpRequest();
+	req.open("GET", "http://127.0.0.1:8000/rest/districts/");
+	req.addEventListener("error", function() {
+		alert("Error: " + this.responseText);
+	});
+	req.addEventListener("load", function() {
+		districtData = this.responseText;
 
-    $.ajax({
-        type:'GET',
-        url:'http://127.0.0.1:8000/rest/voivodeships/',
-        success: function(response) {
-            voivodeshipData = response;
-        },
-		error: function(xhr, status, error) {
-  			var err = eval("(" + xhr.responseText + ")");
-  			alert(err.Message);
-			success = false;
-		}
-    });
+		localStorage.setItem("districts", this.responseText);
+	});
+	req.send();
+
+	var req = new XMLHttpRequest();
+	req.open("GET", "http://127.0.0.1:8000/rest/voivodeships/");
+	req.addEventListener("error", function() {
+		alert("Error: " + this.responseText);
+	});
+	req.addEventListener("load", function() {
+		voivodeshipData = this.responseText;
+
+		localStorage.setItem("voivodeships", this.responseText);
+	});
+	req.send();
 
 
-    if (success) {
+    if (data_retrieved) {
 		displayResults(districtData, voivodeshipData);
 	}
 }
