@@ -1,6 +1,4 @@
-/**
- * Created by Krzysztof on 2016-08-30.
- */
+//Obsługa zapisywania wprowadzonych zmian do bazy danych
 $(".modal").on("click", ".save_button", function() {
     var votes_for_first = $(this).parent().siblings().children(".vote_input1").val();
     var votes_for_second = $(this).parent().siblings().children(".vote_input2").val();
@@ -18,7 +16,7 @@ $(".modal").on("click", ".save_button", function() {
             if(confirm(question)) {
                 $.ajax({
                     type:'POST',
-                    url:'editing/save',
+                    url:'viewing/save',
                     data: {
                         v1: votes_for_first,
                         v2: votes_for_second,
@@ -29,6 +27,9 @@ $(".modal").on("click", ".save_button", function() {
                     }
                 })
             }
-        }
+        },
+		error: function(data) {
+			
+		}
     });
 });

@@ -46,16 +46,7 @@ def listCandidates(request):
     return response
 
 
-@require_POST
-def loginView(request):
-    user = authenticate(username=request.POST["username"], password=request.POST["password"])
-    if user is not None:
-        login(request, user)
-        return HttpResponseRedirect("/")
-    else:
-        return HttpResponseForbidden("Bad username or password.")
-
-
+@require_GET
 def editing_byinh(request):
     if request.method == 'GET':
         lb = request.GET['lower']
@@ -64,13 +55,17 @@ def editing_byinh(request):
         return HttpResponse(data)
 
 
+@require_GET
 def editing_byvoiv(request):
     if request.method == 'GET':
         vname = request.GET['name']
         data = serializers.serialize('json', District.objects.filter(voivodeship__Name=vname))
-        return HttpResponse(data)
+		r = HttpResponse(data);
+		#response["Access-Control-Allow-Origin"] = "*"
+        return HttpResponse(data);
 
 
+@require_GET
 def editing_bytype(request):
     if request.method == 'GET':
         tName = request.GET['name']

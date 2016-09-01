@@ -22,7 +22,6 @@ class Candidate(models.Model):
 class Voivodeship(models.Model):
     Nr = models.IntegerField(default=0)
     Name = models.CharField(max_length=200, primary_key=True)
-    relevant_votes = models.IntegerField(default=0)
     def __str__(self):
         return self.Name.encode('utf8', 'replace')
 	class Meta:
