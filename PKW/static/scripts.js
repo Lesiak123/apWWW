@@ -70,33 +70,41 @@ function displayResults(jsonDistricts, jsonVoivodeships) {
     }
 }
 
-$.when(refresh()).done(function(){
+$.when(requestDistricts(), requestVoivodeships()).done(function(a1, a2){
 	displayResults(districtData, voivodeshipData);
 });
 
+function requestDistricts() {
+	return $.ajax({
+        type:'GET',
+        url:'http://127.0.0.1:8000/rest/districts/',
+       	error:function() {
+			alert("Error");
+		},
+		success:function(data) {
+			districtData = data;
+			localStorage.setItem("districts", data);
+		}
+    });
+}
+
+function requestVoivodeships() {
+	return $.ajax({
+        type:'GET',
+        url:'http://127.0.0.1:8000/rest/voivodeships/',
+       	error:function() {
+			alert("Error");
+		},
+		success:function(data) {
+			voivodeshipData = data;
+			localStorage.setItem("voivodeships", data);
+		}
+    });
+}
+
 function refresh() {
-
-	var req = new XMLHttpRequest();
-	req.open("GET", "http://127.0.0.1:8000/rest/districts/");
-	req.addEventListener("error", function() {
-		alert("Error: " + this.responseText);
-	});
-	req.addEventListener("load", function() {
-		districtData = this.responseText;
-		localStorage.setItem("districts", this.responseText);
-	});
-	req.send();
-
-	var req = new XMLHttpRequest();
-	req.open("GET", "http://127.0.0.1:8000/rest/voivodeships/");
-	req.addEventListener("error", function() {
-		alert("Error: " + this.responseText);
-	});
-	req.addEventListener("load", function() {
-		voivodeshipData = this.responseText;
-		localStorage.setItem("voivodeships", this.responseText);
-	});
-	req.send();
+	requestDistricts();
+	requestVoivodeships();
 }
 
 window.addEventListener('load', function(){
