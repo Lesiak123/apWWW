@@ -53,7 +53,7 @@ def editing_byinh(request):
 	data = serializers.serialize('json',District.objects.filter(Inhabitants__range=[lb,ub]))
 	response = HttpResponse(data);
 	response["Access-Control-Allow-Origin"] = "*"
-	return HttpResponse(data);
+	return response;
 
 
 @require_GET
@@ -62,7 +62,7 @@ def editing_byvoiv(request):
 	data = serializers.serialize('json', District.objects.filter(voivodeship__Name=vname))
 	response = HttpResponse(data);
 	response["Access-Control-Allow-Origin"] = "*"
-	return HttpResponse(data);
+	return response;
 
 
 @require_GET
@@ -71,7 +71,7 @@ def editing_bytype(request):
 	data = serializers.serialize('json', District.objects.filter(Type=tName))
 	response = HttpResponse(data);
 	response["Access-Control-Allow-Origin"] = "*"
-	return HttpResponse(data);
+	return response;
 
 
 def editing_save(request):
