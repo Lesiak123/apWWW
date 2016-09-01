@@ -14,9 +14,6 @@ from .serializers import DistrictSerializer, CandidateSerializer, VoivodeshipSer
 from django.views.decorators.csrf import csrf_exempt
 
 
-@ensure_csrf_cookie
-
-
 @require_GET
 def listDistricts(request):
     districts = District.objects.all()
