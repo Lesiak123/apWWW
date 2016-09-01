@@ -11,6 +11,7 @@ from .models import Candidate, Voivodeship, District
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework.renderers import JSONRenderer
 from .serializers import DistrictSerializer, CandidateSerializer, VoivodeshipSerializer
+from django.views.decorators.csrf import csrf_exempt
 
 
 @ensure_csrf_cookie
@@ -73,7 +74,7 @@ def editing_bytype(request):
 	response["Access-Control-Allow-Origin"] = "*"
 	return response;
 
-
+@csrf_exempt
 def editing_save(request):
 	if request.method == 'GET':
 		dn = request.GET['dn']
