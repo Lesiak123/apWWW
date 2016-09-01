@@ -5,7 +5,7 @@ $(".modal").on("click", ".save_button", function() {
     var dis_name = $(this).parent().siblings(".dis_name").text();
     $.ajax({
         type:'GET',
-        url:'editing/save',
+        url:'http://127.0.0.1:8000/viewing/save',
         data: {
             dn: dis_name
         },
@@ -23,13 +23,16 @@ $(".modal").on("click", ".save_button", function() {
                         dn: dis_name
                     },
                     success: function() {
-                        alert("Zmiany zostały wprowadzone");
-                    }
+                        alert("Changes have been saved");
+                    },
+					error: function() {
+						alert("Error saving changes");
+					}
                 })
             }
         },
 		error: function(data) {
-			
+			alert("Error getting date of last edit");
 		}
     });
 });

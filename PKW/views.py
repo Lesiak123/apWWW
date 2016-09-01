@@ -78,7 +78,9 @@ def editing_save(request):
     if request.method == 'GET':
         dn = request.GET['dn']
         last_edit = District.objects.filter(Name=dn).values('last_edit_date')
-        return HttpResponse(last_edit[0]['last_edit_date'])
+		response = HttpResponse(last_edit[0]['last_edit_date'])
+		response["Access-Control-Allow-Origin"] = "*"
+        return response
     if request.method == 'POST':
         v1 = request.POST['v1']
         v2 = request.POST['v2']
@@ -88,4 +90,6 @@ def editing_save(request):
         dis.votes_for_first = v1
         dis.relevant_votes = rel_v
         dis.save()
+		response = HttpResponse();
+		response["Access-Control-Allow-Origin"] = "*"
         return HttpResponse();
