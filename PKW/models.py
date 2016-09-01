@@ -8,23 +8,25 @@ from datetime import datetime
 
 
 class Candidate(models.Model):
-    Name = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
-    def __str__(self):
-        return self.Name
-    def clean(self):
-        if Candidate.objects.count() > 1:
-            raise ValidationError(_('Już jest dwóch kandydatów'))
-    class Meta:
-        ordering = ["Name"]
+	Name = models.CharField(max_length=200)
+	Nr = models.IntegerField(default=1)
+	def __str__(self):
+		return self.Name.encode('utf8', 'replace')
+	def clean(self):
+		if Candidate.objects.count() > 1:
+			raise ValidationError(_('Już jest dwóch kandydatów'))
+	class Meta:
+		ordering = ["Name"]
 
 
 class Voivodeship(models.Model):
-    Nr = models.IntegerField(default = 0)
+    Nr = models.IntegerField(default=0)
     Name = models.CharField(max_length=200, primary_key=True)
     relevant_votes = models.IntegerField(default=0)
     def __str__(self):
-        return self.Name
+        return self.Name.encode('utf8', 'replace')
+	class Meta:
+		ordering = ["Nr"]
 
 
 class District(models.Model):
@@ -39,6 +41,6 @@ class District(models.Model):
     relevant_votes = models.IntegerField(default=0)
     votes_for_first = models.IntegerField(default=0)
     def __str__(self):
-        return self.Name
+        return self.Name.encode('utf8', 'replace')
 
 

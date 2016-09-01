@@ -1,8 +1,29 @@
 var map_colors = ["rgb(204,227,255)", "rgb(180,213,253)", "rgb(153,199,255)", "rgb(125,183,254)", "rgb(90,164,254)", "rgb(53,144,255)",
     "rgb(2,115,253)", "rgb(2,96,212)", "rgb(1,74,163)", "rgb(0,53,117)", "rgb(255,219,112)", "rgb(255,205,112)", "rgb(255,193,94)",
     "rgb(255,181,84)", "rgb(255,169,81)", "rgb(255,157,57)", "rgb(254,144,32)", "rgb(255,134,9)", "rgb(231,121,0)", "rgb(206,104,0)"];
-var districtData, voivodeshipData;
+var districtData, voivodeshipData, candidateData;
 var data_retrieved = true;
+
+function get_voiv_color(voiv_name) {
+    var percentage = $(".voivodeship_row").filter(function() {
+        return $(this).children(".voiv_name").text() == voiv_name;
+    }).children(".first_percent").text();
+
+    var index;
+    if (percentage >= 50) {
+        index = Math.floor((percentage-50)/2.27);
+        if (index > 9) {
+            index = 9;
+        }
+    } else if (percentage < 50) {
+        percentage = 100 - percentage;
+        index = 10 + Math.floor((percentage-50)/2.27);
+        if (index > 19) {
+            index = 19;
+        }
+    }
+    return map_colors[index];
+}
 
 function getCookie(name) {
     var cookieValue = null;
@@ -29,45 +50,124 @@ $.ajaxSetup({
     }
 });
 
-function displayResults(jsonDistricts, jsonVoivodeships) {
-    var districts = jsonDistricts;
-    var voivodeships = jsonVoivodeships;
+function displayResults(districts, voivodeships, candidates) {
+	var first, second;
+	var row, curr_row;
+	var votes_for_first, votes_for_second;
 
     $("table tr.voivodeship_row").remove();
+
+	if (candidates[0]["Nr"] == 1) {
+		first = candidates[0]["Name"];
+		second = candidates[1]["Name"];
+	} else {
+		first = candidates[1]["Name"];
+		second = candidates[0]["Name"];
+	}
+	$("#first_cand").text(first);
+	$("#second_cand").text(second);
 
     var table = document.getElementById("results_table");
 
     for (var v in voivodeships) {
-        var row = table.insertRow(table.rows.length);
-        var votes_for_first = 0;
-        var votes_for_second = 0;
-        var curr_row;
+        row = table.insertRow(table.rows.length);
+        votes_for_first = 0;
+        votes_for_second = 0;
 
         row.className = "voivodeship_row";
 
         for (var d in districts) {
-            votes_for_first += districts[d]["votes_for_first"];
-            votes_for_second += districts[d]["relevant_votes"] - districts[d]["votes_for_first"];
+			if (districts[d]["voivodeship"] == voivodeships[v]["Name"]) {
+            	votes_for_first += districts[d]["votes_for_first"];
+            	votes_for_second += districts[d]["relevant_votes"] - districts[d]["votes_for_first"];
+			}
         }
 
         var per1 = (votes_for_first/(votes_for_first + votes_for_second))*100;
         var per2 = (votes_for_second/(votes_for_first + votes_for_second))*100;
 
-		console.log(votes_for_first);
-
         row.insertCell().appendChild(document.createTextNode(voivodeships[v]["Nr"]));
-        curr_row = row.insertCell().appendChild(document.createTextNode(voivodeships[v]["Name"]));
+        curr_row = row.insertCell();
         curr_row.className = "voiv_name";
-        row.insertCell().appendChild(document.createTextNode(voivodeships[v][String(votes_for_first + votes_for_second)]));
-        row.insertCell().appendChild(document.createTextNode(voivodeships[v][String(votes_for_first)]));
-        curr_row = row.insertCell().appendChild(document.createTextNode(voivodeships[v][String(per1)]));
+		curr_row.appendChild(document.createTextNode(voivodeships[v]["Name"]));
+        row.insertCell().appendChild(document.createTextNode(String(votes_for_first + votes_for_second)));
+        row.insertCell().appendChild(document.createTextNode(String(votes_for_first)));
+        curr_row = row.insertCell();
         curr_row.className = "first_percent";
+		curr_row.appendChild(document.createTextNode(String(per1)));
         curr_row = row.insertCell();
         curr_row.className = "bar_cell";
-        curr_row = row.insertCell().appendChild(document.createTextNode(voivodeships[v][String(per2)]));
+        curr_row = row.insertCell();
         curr_row.className = "second_percent";
-        row.insertCell().appendChild(document.createTextNode(voivodeships[v][String(votes_for_second)]));
+		curr_row.appendChild(document.createTextNode(String(per2)));
+        row.insertCell().appendChild(document.createTextNode(String(votes_for_second)));
     }
+
+	$('#mySelect').find('option').remove();
+
+	for (var v in voivodeships) {
+		$("#select_by_voiv").append($('<option>', {
+    		value: voivodeships[v]["Name"],
+    		text: voivodeships[v]["Name"]
+		}));
+	}
+
+	$(".voivodeship_row").each(function(index){
+        var curRow = $(this);
+        var first = curRow.children(".first_percent").text();
+        var background = "linear-gradient(to right, blue " +
+            first +
+            "% , " +
+            "orange " +
+            first +
+            "%)";
+        curRow.children(".bar_cell").css({'background-image': background});
+
+    });
+
+AmCharts.makeChart( "mapdiv", {
+  "type": "map",
+  /**
+   * create data provider object
+   * map property is usually the same as the name of the map file.
+   * getAreasFromMap indicates that amMap should read all the areas available
+   * in the map data and treat them as they are included in your data provider.
+   * in case you don't set it to true, all the areas except listed in data
+   * provider will be treated as unlisted.
+   */
+  "dataProvider": {
+    "map": "polandLow",
+    "areas":[
+        {id:"PL-DS", "color": get_voiv_color("dolnośląskie")},
+        {id:"PL-KP", "color": get_voiv_color("kujawsko-pomorskie")},
+        {id:"PL-LD", "color": get_voiv_color("łódzkie")},
+        {id:"PL-LU", "color": get_voiv_color("lubelskie")},
+        {id:"PL-LB", "color": get_voiv_color("lubuskie")},
+        {id:"PL-MA", "color": get_voiv_color("małopolskie")},
+        {id:"PL-MZ", "color": get_voiv_color("mazowieckie")},
+        {id:"PL-OP", "color": get_voiv_color("opolskie")},
+        {id:"PL-PK", "color": get_voiv_color("podkarpackie")},
+        {id:"PL-PD", "color": get_voiv_color("podlaskie")},
+        {id:"PL-PM", "color": get_voiv_color("pomorskie")},
+        {id:"PL-SL", "color": get_voiv_color("śląskie")},
+        {id:"PL-SK", "color": get_voiv_color("świętokrzyskie")},
+        {id:"PL-WN", "color": get_voiv_color("warmińsko-mazurskie")},
+        {id:"PL-WP", "color": get_voiv_color("wielkopolskie")},
+        {id:"PL-ZP", "color": get_voiv_color("zachodniopomorskie")}
+    ]
+  },
+
+  "areasSettings": {
+    "autoZoom": true,
+    "selectedColor": "#CC0000"
+  },
+
+  /**
+   * let's say we want a small map to be displayed, so let's create it
+   */
+  "mediumMap": {}
+} );
+
 }
 
 function requestDistricts() {
@@ -79,7 +179,6 @@ function requestDistricts() {
 		},
 		success:function(data) {
 			districtData = data;
-			console.log(data);
 			localStorage.setItem("districts", data);
 		}
     });
@@ -94,27 +193,28 @@ function requestVoivodeships() {
 		},
 		success:function(data) {
 			voivodeshipData = data;
-			console.log(data);
 			localStorage.setItem("voivodeships", data);
 		}
     });
 }
 
-window.addEventListener('load', function(){
-    $(".voivodeship_row").each(function(index){
-        var curRow = $(this);
-        var first = curRow.children(".first_percent").text();
-        var background = "linear-gradient(to right, blue " +
-            first +
-            "% , " +
-            "orange " +
-            first +
-            "%)";
-        curRow.children(".bar_cell").css({'background-image': background});
-
+function requestCandidates() {
+	return $.ajax({
+        type:'GET',
+        url:'http://127.0.0.1:8000/rest/candidates/',
+       	error:function() {
+			alert("Error");
+		},
+		success:function(data) {
+			candidateData = data;
+			localStorage.setItem("candidates", data);
+		}
     });
-	$.when(requestDistricts(), requestVoivodeships()).done(function(a1, a2){
-		displayResults(districtData, voivodeshipData);
+}
+
+window.addEventListener('load', function(){
+	$.when(requestDistricts(), requestVoivodeships(), requestCandidates()).done(function(a1, a2, a3){
+		displayResults(districtData, voivodeshipData, candidateData);
 	});
 })
 
@@ -213,67 +313,3 @@ function produce_table(data) {
     $('#modal_table').html(district_html);
     $('.modal').show();
 }
-
-function get_voiv_color(voiv_name) {
-    var percentage = $(".voivodeship_row").filter(function() {
-        return $(this).children(".voiv_name").text() == voiv_name;
-    }).children(".first_percent").text();
-
-    var index;
-    if (percentage >= 50) {
-        index = Math.floor((percentage-50)/2.27);
-        if (index > 9) {
-            index = 9;
-        }
-    } else if (percentage < 50) {
-        percentage = 100 - percentage;
-        index = 10 + Math.floor((percentage-50)/2.27);
-        if (index > 19) {
-            index = 19;
-        }
-    }
-    return map_colors[index];
-}
-
-AmCharts.makeChart( "mapdiv", {
-  "type": "map",
-  /**
-   * create data provider object
-   * map property is usually the same as the name of the map file.
-   * getAreasFromMap indicates that amMap should read all the areas available
-   * in the map data and treat them as they are included in your data provider.
-   * in case you don't set it to true, all the areas except listed in data
-   * provider will be treated as unlisted.
-   */
-  "dataProvider": {
-    "map": "polandLow",
-    "areas":[
-        {id:"PL-DS", "color": get_voiv_color("dolnośląskie")},
-        {id:"PL-KP", "color": get_voiv_color("kujawsko-pomorskie")},
-        {id:"PL-LD", "color": get_voiv_color("łódzkie")},
-        {id:"PL-LU", "color": get_voiv_color("lubelskie")},
-        {id:"PL-LB", "color": get_voiv_color("lubuskie")},
-        {id:"PL-MA", "color": get_voiv_color("małopolskie")},
-        {id:"PL-MZ", "color": get_voiv_color("mazowieckie")},
-        {id:"PL-OP", "color": get_voiv_color("opolskie")},
-        {id:"PL-PK", "color": get_voiv_color("podkarpackie")},
-        {id:"PL-PD", "color": get_voiv_color("podlaskie")},
-        {id:"PL-PM", "color": get_voiv_color("pomorskie")},
-        {id:"PL-SL", "color": get_voiv_color("śląskie")},
-        {id:"PL-SK", "color": get_voiv_color("świętokrzyskie")},
-        {id:"PL-WN", "color": get_voiv_color("warmińsko-mazurskie")},
-        {id:"PL-WP", "color": get_voiv_color("wielkopolskie")},
-        {id:"PL-ZP", "color": get_voiv_color("zachodniopomorskie")}
-    ]
-  },
-
-  "areasSettings": {
-    "autoZoom": true,
-    "selectedColor": "#CC0000"
-  },
-
-  /**
-   * let's say we want a small map to be displayed, so let's create it
-   */
-  "mediumMap": {}
-} );

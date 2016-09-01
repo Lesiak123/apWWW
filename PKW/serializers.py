@@ -18,4 +18,4 @@ class VoivodeshipSerializer(ModelSerializer):
 class CandidateSerializer(ModelSerializer):
     class Meta:
         model = Candidate
-        fields = ('Name',)
+        fields = ('Name', 'Nr')
